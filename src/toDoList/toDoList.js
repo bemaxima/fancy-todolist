@@ -1,82 +1,36 @@
-import React, { useState, useEffect } from 'react'
+import React, { useReducer } from 'react'
 import './toDoList.css'
 import '../hooks/useKeyboard.js.js'
 import { useKeyboard } from '../hooks/useKeyboard.js.js';
+import TaskList from './taskList';
+import { titleChanged, taskAdded, taskDone, taskDeleted } from '../stateManager/actionCreator'
+import { INIT_STATE, reducer } from '../stateManager/reducer'
 
 export default function ToDoList() {
-    const [title, setTitle] = useState('');
-    const [toDoList, setToDoList] = useState([
-        {
-            id: '1',
-            title: 'Hit the gym',
-            checked: false,
-        },
-        {
-            id: '2',
-            title: 'Pay bills',
-            checked: true,
-        },
-        {
-            id: '3',
-            title: 'Meet George',
-            checked: false,
-        },
-        {
-            id: '4',
-            title: 'Buy eggs',
-            checked: false,
-        },
-        {
-            id: '5',
-            title: 'Read a book',
-            checked: false,
-        },
-        {
-            id: '6',
-            title: 'Organize office',
-            checked: false,
-        },
-    ]);
+    const [{ title, taskList }, dispatch] = useReducer(reducer, INIT_STATE);
 
-    function newElement() {
-        setToDoList([
-            ...toDoList,
-            {
-                id: Math.random().toString(),
-                title,
-                checked: false
-            }
-        ])
+    function handleInputChange(title) {
+        dispatch(titleChanged(title));
     }
 
-    useEffect(() => {
-        setTitle('');
-    }, [toDoList])
+    function newTask() {
+        dispatch(taskAdded(title));
+    }
 
     function handleEnter(e) {
         if (e.keyCode === 13) {
-            newElement();
+            newTask();
         }
     }
     useKeyboard('keydown', handleEnter, []);
 
     function handleTaskDone(id) {
-        const taskIndex = toDoList.findIndex(task => task.id === id);
-        const newTask = {
-            ...toDoList[taskIndex],
-            checked: !toDoList[taskIndex].checked,
-        }
-        const newToDoList = [...toDoList];
-        newToDoList.splice(taskIndex, 1, newTask);
-        setToDoList(newToDoList);
+        dispatch(taskDone(id));
     }
 
     function handleTaskDelete(id, e) {
         e.stopPropagation();
-        const taskIndex = toDoList.findIndex(task => task.id === id);
-        const newToDoList = [...toDoList];
-        newToDoList.splice(taskIndex, 1);
-        setToDoList(newToDoList);
+        dispatch(taskDeleted(id));
     }
 
     return (
@@ -84,21 +38,12 @@ export default function ToDoList() {
             <div id="myDIV" className="header">
                 <h2>My To Do List</h2>
                 <input type="text" id="myInput" placeholder="Title..."
-                    value={title} onChange={e => setTitle(e.target.value)}
+                    value={title} onChange={e => handleInputChange(e.target.value)}
                 />
-                <span onClick={newElement} className="addBtn">Add</span>
+                <span onClick={newTask} className="addBtn">Add</span>
             </div>
 
-            <ul id="myUL">
-                {toDoList.map(item => (                    
-                    <li
-                        key={item.id} className={item.checked ? 'checked' : ''} onClick={() => handleTaskDone(item.id)}
-                    >
-                        {item.title}
-                        <span className='close' onClick={(e) => handleTaskDelete(item.id, e)} >×</span>
-                    </li>
-                ))}
-            </ul>
+            <TaskList taskList={taskList} onTaskDone={handleTaskDone} onTaskDelete={handleTaskDelete} />
         </div>
     )
 }
