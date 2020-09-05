@@ -55,6 +55,9 @@ function handleTitleChanged(state, payload) {
 }
 
 function handleTaskAdded(state) {
+    if (state.title === '') {
+        return state
+    }
     return {
         title: '',
         taskList: [

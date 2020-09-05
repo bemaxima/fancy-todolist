@@ -3,17 +3,20 @@ import './toDoList.css'
 import '../hooks/useKeyboard.js.js'
 import { useKeyboard } from '../hooks/useKeyboard.js.js';
 import TaskList from './taskList';
-import { connect } from 'react-redux'
+import { reducer } from '../stateManager/reducer'
+import { useDispatch, useSelector } from 'react-redux';
 import { titleChanged, taskAdded, taskDone, taskDeleted } from '../stateManager/actionCreator';
 
-function ToDoList({ title, taskList, onTitleChanged, onTaskAdded, onTaskDone, onTaskDeleted }) {
+export default function ToDoList() {
+    const dispatch = useDispatch(reducer);
+    const { title, taskList } = useSelector(state => state)
 
     function handleInputChange(title) {
-        onTitleChanged(title);
+        dispatch(titleChanged(title));
     }
 
     function newTask() {
-        onTaskAdded();
+        dispatch(taskAdded());
     }
 
     function handleEnter(e) {
@@ -24,12 +27,12 @@ function ToDoList({ title, taskList, onTitleChanged, onTaskAdded, onTaskDone, on
     useKeyboard('keydown', handleEnter, []);
 
     function handleTaskDone(id) {
-        onTaskDone(id);
+        dispatch(taskDone(id));
     }
 
     function handleTaskDelete(id, e) {
         e.stopPropagation();
-        onTaskDeleted(id);
+        dispatch(taskDeleted(id));
     }
 
     return (
@@ -46,15 +49,3 @@ function ToDoList({ title, taskList, onTitleChanged, onTaskAdded, onTaskDone, on
         </div>
     )
 }
-
-export default connect(
-    state => state,
-    dispatch => (
-        {
-            onTitleChanged: title => dispatch(titleChanged(title)),
-            onTaskAdded: () => dispatch(taskAdded()),
-            onTaskDone: (id) => dispatch(taskDone(id)),
-            onTaskDeleted: (id) => dispatch(taskDeleted(id)),
-        }
-    )
-)(ToDoList)
