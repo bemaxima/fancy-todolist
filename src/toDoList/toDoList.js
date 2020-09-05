@@ -3,17 +3,49 @@ import './toDoList.css'
 import '../hooks/useKeyboard.js.js'
 import { useKeyboard } from '../hooks/useKeyboard.js.js';
 import TaskList from './taskList';
-import { titleChanged, taskAdded, taskDone, taskDeleted } from '../stateManager/actionCreator'
-import { connect } from 'react-redux'
 
-function ToDoList({ title, taskList, onInputChange, onNewTask, onTaskDone, onTaskDelete }) {
+export default function ToDoList() {
+    // temprory data before using redux and INIT_DATA in reducer.js
+    const title = '';
+    const taskList = [
+        {
+            id: '1',
+            title: 'Hit the gym',
+            checked: false,
+        },
+        {
+            id: '2',
+            title: 'Pay bills',
+            checked: true,
+        },
+        {
+            id: '3',
+            title: 'Meet George',
+            checked: false,
+        },
+        {
+            id: '4',
+            title: 'Buy eggs',
+            checked: false,
+        },
+        {
+            id: '5',
+            title: 'Read a book',
+            checked: false,
+        },
+        {
+            id: '6',
+            title: 'Organize office',
+            checked: false,
+        },
+    ]
 
     function handleInputChange(title) {
-        onInputChange(title)
+
     }
 
     function newTask() {
-        onNewTask()
+
     }
 
     function handleEnter(e) {
@@ -24,12 +56,12 @@ function ToDoList({ title, taskList, onInputChange, onNewTask, onTaskDone, onTas
     useKeyboard('keydown', handleEnter, []);
 
     function handleTaskDone(id) {
-        onTaskDone(id);
+
     }
 
     function handleTaskDelete(id, e) {
         e.stopPropagation();
-        onTaskDelete(id);
+
     }
 
     return (
@@ -46,20 +78,3 @@ function ToDoList({ title, taskList, onInputChange, onNewTask, onTaskDone, onTas
         </div>
     )
 }
-
-export default connect(
-    state => {
-        return {
-            title: state.title,
-            taskList: state.taskList
-        }
-    },
-    dispatch => {
-        return {
-            onInputChange: title => dispatch(titleChanged(title)),
-            onNewTask: () => dispatch(taskAdded()),
-            onTaskDone: id => dispatch(taskDone(id)),
-            onTaskDelete: id => dispatch(taskDeleted(id)),
-        }
-    }
-)(ToDoList)
