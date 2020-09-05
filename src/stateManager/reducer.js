@@ -36,7 +36,7 @@ export const INIT_STATE = {
     ]
 }
 
-export function reducer(state, action) {
+export function reducer(state = INIT_STATE, action) {
     return (ACTION_HANDLERS[action.type] || (() => state))(state, action.payload)
 }
 
@@ -54,14 +54,14 @@ function handleTitleChanged(state, payload) {
     }
 }
 
-function handleTaskAdded(state, payload) {
+function handleTaskAdded(state) {
     return {
         title: '',
         taskList: [
             ...state.taskList,
             {
                 id: Math.random().toString(),
-                title: payload,
+                title: state.title,
                 checked: false
             }
         ]
