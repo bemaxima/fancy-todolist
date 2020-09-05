@@ -3,49 +3,17 @@ import './toDoList.css'
 import '../hooks/useKeyboard.js.js'
 import { useKeyboard } from '../hooks/useKeyboard.js.js';
 import TaskList from './taskList';
+import { connect } from 'react-redux'
+import { titleChanged, taskAdded, taskDone, taskDeleted } from '../stateManager/actionCreator';
 
-export default function ToDoList() {
-    // temprory data before using redux and INIT_DATA in reducer.js
-    const title = '';
-    const taskList = [
-        {
-            id: '1',
-            title: 'Hit the gym',
-            checked: false,
-        },
-        {
-            id: '2',
-            title: 'Pay bills',
-            checked: true,
-        },
-        {
-            id: '3',
-            title: 'Meet George',
-            checked: false,
-        },
-        {
-            id: '4',
-            title: 'Buy eggs',
-            checked: false,
-        },
-        {
-            id: '5',
-            title: 'Read a book',
-            checked: false,
-        },
-        {
-            id: '6',
-            title: 'Organize office',
-            checked: false,
-        },
-    ]
+function ToDoList({ title, taskList, onTitleChanged, onTaskAdded, onTaskDone, onTaskDeleted }) {
 
     function handleInputChange(title) {
-
+        onTitleChanged(title);
     }
 
     function newTask() {
-
+        onTaskAdded();
     }
 
     function handleEnter(e) {
@@ -56,12 +24,12 @@ export default function ToDoList() {
     useKeyboard('keydown', handleEnter, []);
 
     function handleTaskDone(id) {
-
+        onTaskDone(id);
     }
 
     function handleTaskDelete(id, e) {
         e.stopPropagation();
-
+        onTaskDeleted(id);
     }
 
     return (
@@ -78,3 +46,15 @@ export default function ToDoList() {
         </div>
     )
 }
+
+export default connect(
+    state => state,
+    dispatch => (
+        {
+            onTitleChanged: title => dispatch(titleChanged(title)),
+            onTaskAdded: () => dispatch(taskAdded()),
+            onTaskDone: (id) => dispatch(taskDone(id)),
+            onTaskDeleted: (id) => dispatch(taskDeleted(id)),
+        }
+    )
+)(ToDoList)
