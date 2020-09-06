@@ -5,18 +5,19 @@ import { useKeyboard } from '../hooks/useKeyboard.js.js';
 import TaskList from './taskList';
 import { reducer } from '../stateManager/reducer'
 import { useDispatch, useSelector } from 'react-redux';
-import { titleChanged, taskAdded, taskDone, taskDeleted } from '../stateManager/actionCreator';
+import { titleChanged, taskAdded, taskAddedWithLoading, taskDone, taskDeleted } from '../stateManager/actionCreator';
 
 export default function ToDoList() {
     const dispatch = useDispatch(reducer);
-    const { title, taskList } = useSelector(state => state)
+    const { title, taskList, loading } = useSelector(state => state)
 
     function handleInputChange(title) {
         dispatch(titleChanged(title));
     }
 
     function newTask() {
-        dispatch(taskAdded());
+        // dispatch(taskAdded());
+        dispatch(taskAddedWithLoading());
     }
 
     function handleEnter(e) {
@@ -42,7 +43,9 @@ export default function ToDoList() {
                 <input type="text" id="myInput" placeholder="Title..."
                     value={title} onChange={e => handleInputChange(e.target.value)}
                 />
-                <span onClick={newTask} className="addBtn">Add</span>
+                {loading ?
+                <span className="addBtn loading">Please wait</span> :
+                <span onClick={newTask} className="addBtn">Add</span>}
             </div>
 
             <TaskList taskList={taskList} onTaskDone={handleTaskDone} onTaskDelete={handleTaskDelete} />

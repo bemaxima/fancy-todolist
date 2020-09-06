@@ -108,6 +108,10 @@
     transition: 0.3s;
     border-radius: 0;
   }
+
+  .loading{
+    cursor: default;
+  }
   
   .addBtn:hover {
     background-color: #bbb;

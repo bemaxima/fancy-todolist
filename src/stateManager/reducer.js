@@ -33,7 +33,8 @@ export const INIT_STATE = {
             title: 'Organize office',
             checked: false,
         },
-    ]
+    ],
+    loading: false,
 }
 
 export function reducer(state = INIT_STATE, action) {
@@ -45,6 +46,7 @@ const ACTION_HANDLERS = {
     [ACTIONS.TASK_ADDED]: handleTaskAdded,
     [ACTIONS.TASK_DONE]: handleTaskDone,
     [ACTIONS.TASK_DELETED]: handleTaskDeleted,
+    [ACTIONS.LOADING]: handleLoading,
 }
 
 function handleTitleChanged(state, payload) {
@@ -56,7 +58,10 @@ function handleTitleChanged(state, payload) {
 
 function handleTaskAdded(state) {
     if (state.title === '') {
-        return state
+        return {
+            ...state,
+            loading: false,
+        }
     }
     return {
         title: '',
@@ -67,7 +72,8 @@ function handleTaskAdded(state) {
                 title: state.title,
                 checked: false
             }
-        ]
+        ],
+        loading: false,
     }
 }
 
@@ -92,5 +98,12 @@ function handleTaskDeleted(state, payload) {
     return {
         ...state,
         taskList: newTaskList
+    }
+}
+
+function handleLoading(state) {
+    return {
+        ...state,
+        loading: true,
     }
 }
